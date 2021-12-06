@@ -1,5 +1,24 @@
 window.onload = (function() {
 
+    !function(){
+
+        const viewedHerokuAlert = localStorage.getItem("heroku-alert-view");
+
+        if(!viewedHerokuAlert) {
+            Toastify({
+                text: document.querySelector("#alert-heroku").innerHTML,
+                'backgroundColor': "deeppink",
+                'duration': -1,
+                'close' :true,
+                'callback': function(){
+                    localStorage.setItem("heroku-alert-view", true);
+                }
+            }).showToast();
+
+        }
+
+    }();
+
     const dev = false;
     const inputShortUrl = document.querySelector("#shortUrl");
     const searchBtn = document.querySelector("#searchBtn");
