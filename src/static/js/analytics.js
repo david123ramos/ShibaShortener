@@ -1,6 +1,6 @@
 window.onload = (function() {
 
-    const dev = true;
+    const dev = false;
     const inputShortUrl = document.querySelector("#shortUrl");
     const searchBtn = document.querySelector("#searchBtn");
     const statisticsInfo = document.querySelector("#statistics-info");
@@ -61,14 +61,6 @@ window.onload = (function() {
 
 
     });
-
-
-
-
-
-
-
-
 
 });
 

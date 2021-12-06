@@ -1,7 +1,7 @@
 
 window.onload = (function(){
 
-    const dev = true;
+    const dev = false;
     
     const API_BASE_URL =  dev ? "http://localhost:8080" :`https://shibashortener.herokuapp.com`;
     const shortbtn = document.querySelector("#shortBtnAction");
