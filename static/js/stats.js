@@ -109,7 +109,7 @@ function renderStatistics(template, insights) {
         totalClicks: insights.totalClicks,
         clicksPerDay : insights.clicksPerDay,
         period: insights.mostVistedPeriod == "Day" ? "do dia ☀️" : "da noite 🌙",
-        os: Object.keys(insights.visitorsByOs).reduce((a, b) => { return insights.visitorsByOs[a] > insights.visitorsByOs[b] ? a : b }) //get most used os
+        os: Object.keys(insights.visitorsByOs).length > 0 ? Object.keys(insights.visitorsByOs).reduce((a, b) => { return insights.visitorsByOs[a] > insights.visitorsByOs[b] ? a : b }) : "URL ainda não acessada" //get most used os
     }
     
     return Mustache.render(template, params);
