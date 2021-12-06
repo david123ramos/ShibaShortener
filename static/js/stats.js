@@ -5,6 +5,7 @@ window.onload = (function() {
     const searchBtn = document.querySelector("#searchBtn");
     const statisticsInfo = document.querySelector("#statistics-info");
     const template = document.querySelector("#card-template").innerHTML;
+    const shibaLoadingDiv = document.querySelector("#shibaLoading");
 
     const baseURL = dev ? "http://localhost:8080" : "https://shibashortener.herokuapp.com";
 
@@ -12,73 +13,85 @@ window.onload = (function() {
     searchBtn.addEventListener("click", async e => {
 
         const value = inputShortUrl.value;
+        const sanitizedURL = validateUrl(value);
 
-        if(value != null) {
+        if(sanitizedURL !=null && sanitizedURL?.trim() != "") {
 
-            const sanitizedURL = sanitizeUrl(value);
+            shibaLoadingDiv.classList.remove("d-none");
 
-            if(sanitizedURL?.trim() != "") {
-                const response = await fetch(`${baseURL}/analytics/${sanitizedURL}`, {method: "GET"});
+            const response = await fetch(`${baseURL}/analytics/${sanitizedURL}`, {method: "GET"});
 
-                if(response.ok) {
-                    const json = await response.json();
-                    console.log(json);
-        
-                    const params = {
-                        id: json.id,
-                        createdDay : Intl.DateTimeFormat("pt-br").format(new Date(json?.createdAt)),
-                        existingDays : json.existingDays > 1 ? `${json.existingDays} dias` : `${json.existingDays} dia`,
-                        totalClicks: json.totalClicks,
-                        clicksPerDay : json.clicksPerDay,
-                        period: json.mostVistedPeriod == "Day" ? "do dia ☀️" : "da noite 🌙",
-                        os: Object.keys(json.visitorsByOs).reduce((a, b) => { return json.visitorsByOs[a] > json.visitorsByOs[b] ? a : b }) //get most used os
-                    }
-                    
-                    const rendered = Mustache.render(template, params);
-                    statisticsInfo.innerHTML = rendered;
-                    return;
-                }
-
-                Toastify({
-                    text: "Aconteceu algum erro esquisito...🤨",
-                    duration: 3000,
-                    'backgroundColor': "red"
-                }).showToast();
-
-
-    
+            if(response.ok) {
+                const json = await response.json();
+                shibaLoadingDiv.classList.add("d-none");
+                const rendered = renderStatistics(template, json);
+                statisticsInfo.innerHTML = rendered;
                 
-            }else{ 
-                Toastify({
-                    text: "Esta não parecer ser uma URL do shib.sr 🥺",
-                    duration: 3000,
-                    'backgroundColor': "red"
-                }).showToast();
+                return;
             }
 
+            shibaLoadingDiv.classList.add("d-none");
+            Toastify({
+                text: "Aconteceu algum erro esquisito...🤨",
+                duration: 3000,
+                'backgroundColor': "red"
+            }).showToast();
 
+            
+        }else{ 
+            Toastify({
+                text: "Esta não parecer ser uma URL válida🥺",
+                duration: 3000,
+                'backgroundColor': "red"
+            }).showToast();
         }
-
-
     });
 
 });
 
-function sanitizeUrl(shortURL) {
+/**
+ * Validate URL
+ * @param {*} shortURL 
+ * @returns {String | null}
+ */
+function validateUrl(shortURL) {
 
-
-    
-
-    //TODO sanitize URL;
-    try {
-        if(shortURL.includes("http://") || shortURL.includes("https://")) {
+    if(shortURL != null) {
+        try {
             const url = new URL(shortURL);
-            return url.pathname.replace("/", "");
-        }else {
-            return shortURL.substring(shortURL.lastIndexOf("/")+1)
+            if(shortURL.includes("http://") || shortURL.includes("https://")) {
+                
+                return url.pathname.replace("/", "");
+            }else {
+    
+                return url.pathname.substring(url.pathname.lastIndexOf("/")+1)
+            }
+        }catch(err) {
+           return null
         }
-    }catch(err) {
-       
     }
 
+    return null;
+}
+
+
+/**
+ * Used to render analytics of URL.
+ * @param {String} template HTML string
+ * @param {Object} insights Object returned from analytical endpoint
+ * @returns {String}
+ */
+function renderStatistics(template, insights) {
+   
+    const params = {
+        id: insights.id,
+        createdDay : Intl.DateTimeFormat("pt-br").format(new Date(insights?.createdAt)),
+        existingDays : insights.existingDays > 1 ? `${insights.existingDays} dias` : `${insights.existingDays} dia`,
+        totalClicks: insights.totalClicks,
+        clicksPerDay : insights.clicksPerDay,
+        period: insights.mostVistedPeriod == "Day" ? "do dia ☀️" : "da noite 🌙",
+        os: Object.keys(insights.visitorsByOs).reduce((a, b) => { return insights.visitorsByOs[a] > insights.visitorsByOs[b] ? a : b }) //get most used os
+    }
+    
+    return Mustache.render(template, params);
 }
