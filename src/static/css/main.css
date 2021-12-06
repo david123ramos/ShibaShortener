@@ -1,0 +1,53 @@
+
+:root {
+    --shiba-color: rgb(255, 66, 98);
+}
+
+html, body {
+    height: 100%;
+    background-color: rgba(243, 243, 243, 0.74);
+    overflow: hidden;
+}
+
+#config {
+    text-decoration: none;
+    color: initial;
+    cursor: pointer;
+}
+
+.url-input {
+    border-radius: 10px;
+
+}
+
+.shibalogo{
+    position: relative;
+    width: 15rem;
+    height: auto;
+}
+
+.short-btn {
+    background-color: var(--shiba-color);
+    border-color: rgb(255, 22, 61);
+}
+.short-btn:hover {
+    background-color: rgb(221, 13, 48);
+    border-color: rgb(255, 22, 61);
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(235, 235, 235, 0.877);;
+    color: white;
+    text-align: end;
+    padding: 0px 15px;
+}
+
+.footer a {
+    text-decoration: none;
+    font-size: small;
+    color: var(--shiba-color);
+}
